@@ -1,0 +1,247 @@
+<div class="card">
+  <h3 class="card-title" style="margin: 10px; text-align: center">
+    CALIFICACIÓN DE PROVEEDORES
+  </h3>
+
+  <div class="row">
+    <div class="col tablaLista">
+      <mat-card>
+        <h5 class="titulos">Lista de proveedores sin calificar</h5>
+        <mat-table
+          matTableFilter
+          [exampleEntity]="filterEntity"
+          [filterType]="filterType"
+          [dataSource]="dataSource"
+          class="mat-elevation-z8"
+        >
+          <ng-container matColumnDef="nombrecomercial">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  placeholder="Nombre comercial"
+                  [(ngModel)]="filterEntity.identificacionDto.nombrecomercial"
+                />
+              </mat-form-field>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              (click)="seteaFechas(element.idproveedor)"
+            >
+              {{ element.identificacionDto.nombrecomercial }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="nombrerazonsocial">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  placeholder="Razon social"
+                  [(ngModel)]="filterEntity.identificacionDto.nombrerazonsocial"
+                />
+              </mat-form-field>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              (click)="seteaFechas(element.idproveedor)"
+            >
+              {{ element.identificacionDto.nombrerazonsocial }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="ruc">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-form-field appearance="outline">
+                <input
+                  matInput
+                  placeholder="RUC"
+                  [(ngModel)]="filterEntity.identificacionDto.ruc"
+                />
+              </mat-form-field>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let element"
+              (click)="seteaFechas(element.idproveedor)"
+            >
+              {{ element.identificacionDto.ruc }}
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+      </mat-card>
+    </div>
+  </div>
+
+  <form #reportForm="ngForm" [formGroup]="reporteForm">
+    <div class="card-body">
+      <div class="row mt-3">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+          <div class="form-group">
+            <label style="margin-right: 20px">Código</label>
+            <label class="sombra" style="margin-right: 20px">123</label>
+          </div>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+          <label style="margin-right: 20px">Fecha pedido de calificación</label>
+          <label class="sombra" style="margin-right: 20px">2020/12/02</label>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+          <div class="form-group">
+            <label style="margin-right: 20px"
+              >Fecha recepción documentación</label
+            >
+            <label class="sombra" style="margin-right: 20px">2020/10/12</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-4 col-lg-3">
+          <div class="form-group">
+            <label for="documentacionEntregada"
+              >Documentación entregada:
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-8 col-lg-9">
+          <label class="form-check-label">
+            <input
+              type="radio"
+              value="completo"
+              formControlName="documentacionEntregada"
+            />
+            Completo
+          </label>
+          <label style="margin-left: 70px" class="form-check-label">
+            <input
+              type="radio"
+              value="incompleto"
+              formControlName="documentacionEntregada"
+            />
+            Incompleto
+          </label>
+          <ng-container
+            *ngIf="
+              !reporteForm.get('documentacionEntregada').valid &&
+              reportForm.submitted
+            "
+          >
+            <p class="alert alert-danger alert-dismissible">
+              Este campo es requerido
+            </p>
+          </ng-container>
+        </div>
+      </div>
+
+      <ng-container
+        *ngIf="reporteForm.get('documentacionEntregada').value === 'completo'"
+        ><div class="row">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <label for="documentoBuro">
+              <strong>Documento del buró de crédito</strong>
+            </label>
+            <angular-file-uploader
+              [numberFileUpload]="3"
+              [allowedFiles]="lista"
+              [resetUpload]="resetUpload"
+              [config]="setIdAfuConfig(2)"
+              (ApiResponse)="docUpload($event)"
+            >
+            </angular-file-uploader>
+          </div>
+
+          <div class="col-sm-12 col-md-6 col-lg-6 mt-3">
+            <div class="form-group">
+              <label for="notaBuro">
+                <strong> Nota del buró: </strong>
+              </label>
+              <input
+                formControlName="notaBuro"
+                type="number"
+                class="form-control"
+                placeholder="Nota del buró"
+                id="notaBuro"
+                min="0"
+                max="30"
+              />
+              <ng-container
+                *ngIf="
+                  !reporteForm.get('notaBuro').valid && reportForm.submitted
+                "
+              >
+                <p class="alert alert-danger alert-dismissible">
+                  Este campo es requerido
+                </p>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="observaciones">
+                <strong>Observaciones: </strong>
+              </label>
+              <div class="input-group border">
+                <textarea
+                  class="form-control"
+                  aria-label="With textarea"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-3 col-md-3 col-lg-3">
+            <div class="shadow-sm card action-buttons">
+              <button
+                type="submit"
+                (click)="reportForm.valid ? generatePdf() : ''"
+                class="btn btn-primary d-flex align-items-center justify-content-center"
+              >
+                <i class="material-icons"> picture_as_pdf </i>
+                <span>Calificar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container
+        *ngIf="reporteForm.get('documentacionEntregada').value === 'incompleto'"
+      >
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group">
+              <label for="notificar">
+                <strong>Notificar a proveedor </strong>
+              </label>
+              <div class="input-group border">
+                <textarea
+                  class="form-control"
+                  aria-label="With textarea"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3 col-md-3 col-lg-3">
+            <div class="shadow-sm card action-buttons">
+              <button
+                class="btn btn-primary d-flex align-items-center justify-content-center"
+              >
+                <i class="material-icons"> email </i>
+                <span> *Notificar al Aspirante</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+</div>
